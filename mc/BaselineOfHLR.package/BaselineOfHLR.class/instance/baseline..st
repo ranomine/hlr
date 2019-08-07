@@ -6,7 +6,7 @@ baseline: spec
 		spec baseline: 'Voyage' with: [
 			spec
 				repository: 'github://zecke/voyage-stable:v1.5.4_1-patched/mc';
-				loads: #('default mongo tests')].
+				loads: #('default')].
 		
 		spec project: 'RFB' with: [
 				spec
