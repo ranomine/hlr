@@ -1,0 +1,99 @@
+command-timeout: 40
+no-response-timeout: 40
+
+box:
+  id: ranomine/base:latest
+
+documentation:
+  steps:
+    - script:
+      name: Generate documentation
+      cwd: doc
+      code: make
+
+build:
+  steps:
+    - script:
+      name: Build HLR
+      code: ./wercker/build_hlr.sh
+    - script:
+      name: Artifacts
+      code: |
+        echo "Zipping build/ into $WERCKER_REPORT_DIR"
+        mkdir -p $WERCKER_REPORT_DIR
+        zip -r $WERCKER_REPORT_DIR/build.zip build/ --exclude \*pharo-local\* \*github-cache\*
+
+deploy:
+  steps:
+    - script: Prepare image
+      code: ./wercker/prepare_image.sh
+    - internal/docker-push:
+      username: $USERNAME
+      password: $PASSWORD
+      tag: latest
+      cmd: /startup.sh
+      ports: "5900"
+      repository: ranomine/hlr
+
+unit_tests:
+  steps:
+    - script:
+      name: Install pip dependencies
+      code: ./wercker/build_tests.sh
+    - script: 
+      name: Run tests
+      code: ./wercker/run_unit_tests.sh
+    - script:
+      name: Artifacts
+      code: |
+        echo "Zipping xml test results into $WERCKER_REPORT_DIR"
+        mkdir -p $WERCKER_REPORT_DIR
+        zip $WERCKER_REPORT_DIR/unit_tests.zip build/*.xml
+
+integration_tests:
+  steps:
+    - script:
+      name: Install pip dependencies
+      code: ./wercker/build_tests.sh
+    - script: 
+      name: Run tests
+      code: ./wercker/run_integration_tests.sh
+    - script:
+      name: Artifacts
+      code: |
+        echo "Zipping xml test results into $WERCKER_REPORT_DIR"
+        mkdir -p $WERCKER_REPORT_DIR
+        zip $WERCKER_REPORT_DIR/integration_tests.zip build/*.xml
+
+latency_tests:
+  steps:
+    - script:
+      name: Install pip dependencies (required to fill db)
+      code: ./wercker/build_tests.sh
+    - script:
+      name: Fill db
+      code: ./wercker/fill_db.sh
+    - script:
+      name: Build latency tests
+      code: ./wercker/build_latency_tests.sh
+    - script: 
+      name: Run latency tests
+      code: ./wercker/run_latency_tests.sh
+    - script:
+      name: Artifacts
+      code: |
+        echo "Copying execution profile report into $WERCKER_REPORT_DIR"
+        mkdir -p $WERCKER_REPORT_DIR
+        cp build/profile_report.txt $WERCKER_REPORT_DIR
+
+
+new_image:
+  steps:
+    - internal/docker-build:
+      dockerfile: tests/Dockerfile.debianbase
+      image-name: debianbase
+    - internal/docker-push:
+      username: $USERNAME
+      password: $PASSWORD
+      image-name: debianbase
+      repository: moijidev/debianbase
