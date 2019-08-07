@@ -7,8 +7,8 @@ source $(dirname $0)/funcs.sh
 
 echo "Preparing image"
 cd $PHAROBUILD
-cp HLR.image /var/pharo/images/61/HLR.image
-cp HLR.changes /var/pharo/images/61/HLR.changes
+cp Hlr.image /var/pharo/images/61/Hlr.image
+cp Hlr.changes /var/pharo/images/61/Hlr.changes
 ln -s /usr/lib/i386-linux-gnu/libcrypto.so.1.0.0 /var/pharo/images/61/libcrypto.so
 
 cat > /startup.sh << __EOF__
