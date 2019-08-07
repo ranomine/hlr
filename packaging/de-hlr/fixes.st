@@ -53,9 +53,6 @@ Author useAuthor: 'RHHack' during: [
 ].
 
 
-"Generate the model so we start instantly"
-HLR asn1Model.
-
 "Now leave but in a new process to let other things die"
 [
   Smalltalk garbageCollect; garbageCollect.
