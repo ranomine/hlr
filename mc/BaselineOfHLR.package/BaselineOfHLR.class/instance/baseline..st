@@ -5,8 +5,8 @@ baseline: spec
 	spec for: #'common' do: [
 		spec baseline: 'Voyage' with: [
 			spec
-				repository: 'github://zecke/voyage-stable:master/mc';
-				loads: #('mongo tests')].
+				repository: 'github://zecke/voyage-stable:v1.5.4_1-patched/mc';
+				loads: #('default mongo tests')].
 		
 		spec project: 'RFB' with: [
 				spec
